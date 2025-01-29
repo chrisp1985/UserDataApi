@@ -1,0 +1,35 @@
+server:
+  port: 9092
+  shutdown: graceful
+  netty:
+    connection-timeout: 2s
+    idle-timeout: 15s
+
+spring:
+  application.name: UserDataAPI
+
+  r2dbc:
+    url: r2dbc:mysql://localhost:3306/mydb
+    username: root
+    password: root
+    pool.enabled: true
+    pool.initial-size: 5
+    pool.max-size: 10
+
+  flyway:
+    user: ${spring.r2dbc.username}
+    password: ${spring.r2dbc.password}
+    url: ${spring.r2dbc.url}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+  info:
+    env:
+      enabled: true
+
+logging:
+  level:
+    org.springframework.r2dbc: WARN

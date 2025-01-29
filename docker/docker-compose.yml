@@ -1,0 +1,47 @@
+version: "3.8"
+services:
+
+  # Applications
+
+  user-api-service:
+    image: "user-data-api-docker-image"
+    container_name: "user-data-api-docker-image"
+    ports:
+      - "9092:9092"
+    environment:
+      # Buildpacks environment variable to configure the number of threads in memory calculation
+      - BPL_JVM_THREAD_COUNT=50
+      - BPL_DEBUG_ENABLED=true
+      - BPL_DEBUG_PORT=9888
+      - JAVA_TOOL_OPTIONS=-javaagent:/workspace/BOOT-INF/lib/opentelemetry-javaagent-1.33.3.jar
+      - SPRING_R2DBC_URL=r2dbc:mysql://user-mysql:3306/mydb
+
+  # Backing Services
+
+  user-mysql:
+    image: "mysql/mysql-server"
+    container_name: "user-mysql"
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+
+  # Observability
+
+  grafana:
+    image: grafana/grafana-oss:10.4.3
+    container_name: grafana
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=user
+      - GF_SECURITY_ADMIN_PASSWORD=password
+
+  prometheus:
+    image: quay.io/prometheus/prometheus:v2.52.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
