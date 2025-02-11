@@ -40,7 +40,7 @@ class UserControllerTests {
 	}
 
 	@Test
-	void shouldReturnValidUser() throws Exception {
+	void shouldReturnValidUser() {
 		var testUser1 = new User(1, "chris", 100);
 
 		when(userDataService.getUserById(anyString())).thenReturn(Mono.just(testUser1));

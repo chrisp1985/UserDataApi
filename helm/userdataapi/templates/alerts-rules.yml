@@ -1,0 +1,32 @@
+kind: PrometheusRule
+apiVersion: monitoring.coreos.com/v1
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    version: {{ .Release.Revision | quote }}
+    app: {{ .Release.Name }}
+  {{- with .Values.appLabels }}
+  {{ toYaml . | indent 4 }}
+  {{- end }}
+annotations:
+  {{- with .Values.annotations }}
+  {{ toYaml . | indent 4 }}
+  {{- end }}
+spec:
+  groups:
+    - name: "user-data-api-rules"
+      rules:
+        - alert: "HighCPUUsage"
+          expr: "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode='idle'}[5m])) * 100) > 80"
+          for: 2m
+          labels:
+            severity: "critical"
+          annotations:
+            title: HighCPUUsage
+            message: "High CPU usage detected"
+            description: |
+              CPU use has been unusually high.
+              This means it is at risk of processing failures.
+              
+              Query: `100 - (avg by (instance) (rate(node_cpu_seconds_total{mode='idle'}[5m])) * 100) > 80`

@@ -1,31 +1,43 @@
-version: "3.8"
 services:
 
   # Applications
 
   user-api-service:
+    depends_on:
+      usermysql:
+        condition: service_healthy
+      prometheus:
+        condition: service_started
+      grafana:
+        condition: service_started
+      alertmanager:
+        condition: service_started
     image: "user-data-api-docker-image"
     container_name: "user-data-api-docker-image"
     ports:
       - "9092:9092"
     environment:
-      # Buildpacks environment variable to configure the number of threads in memory calculation
-      - BPL_JVM_THREAD_COUNT=50
-      - BPL_DEBUG_ENABLED=true
-      - BPL_DEBUG_PORT=9888
-      - JAVA_TOOL_OPTIONS=-javaagent:/workspace/BOOT-INF/lib/opentelemetry-javaagent-1.33.3.jar
-      - SPRING_R2DBC_URL=r2dbc:mysql://user-mysql:3306/mydb
+      - SPRING_R2DBC_URL=r2dbc:mysql://usermysql:3306/mydb
 
   # Backing Services
 
-  user-mysql:
+  usermysql:
     image: "mysql/mysql-server"
     container_name: "user-mysql"
+    depends_on:
+      - grafana
     ports:
       - "3306:3306"
     environment:
       - MYSQL_USER=root
-      - MYSQL_PASSWORD=root
+      - MYSQL_PASSWORD=mypassword
+      - MYSQL_DATABASE=mydb
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
 
   # Observability
 
@@ -45,3 +57,13 @@ services:
     container_name: prometheus
     ports:
       - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - alertmanager
+
+  alertmanager:
+    image: quay.io/prometheus/alertmanager:v0.27.0
+    container_name: alertmanager
+    ports:
+      - "9093:9093"

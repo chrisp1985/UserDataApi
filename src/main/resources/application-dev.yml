@@ -6,24 +6,34 @@ server:
     idle-timeout: 15s
 
 spring:
+  application.name: UserDataAPI
+
   r2dbc:
     url: r2dbc:mysql://localhost:3306/mydb
     username: root
-    password: root
+    password: mypassword
+    driver-class-name: org.mysql.Driver
     pool.enabled: true
     pool.initial-size: 5
     pool.max-size: 10
 
-  management:
-    endpoints:
-      web:
-        exposure:
-          include: health, info, prometheus
-    info:
-      env:
-        enabled: true
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    user: root
+    password: mypassword
+    url: jdbc:mysql://localhost:3306/mydb
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+  info:
+    env:
+      enabled: true
 
 logging:
   level:
-    org.springframework:
-      r2dbc: INFO
+    org.flywaydb: DEBUG
