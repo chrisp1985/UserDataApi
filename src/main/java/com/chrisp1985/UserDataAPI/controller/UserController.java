@@ -2,6 +2,7 @@ package com.chrisp1985.UserDataAPI.controller;
 
 import com.chrisp1985.UserDataAPI.data.User;
 import com.chrisp1985.UserDataAPI.service.UserDataService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/user")
+@Slf4j
 public class UserController {
 
     private final UserDataService userDataService;
@@ -29,6 +31,7 @@ public class UserController {
 
     @GetMapping(value = "/r2dbc")
     public ResponseEntity<Flux<User>> getUsersR2jdbc() {
+        log.info("User request made.");
         return ResponseEntity.ok(userDataService.getAllUsers());
     }
 

@@ -32,23 +32,26 @@ set. This can be executed with `.\gradlew flywayMigrate` and will update the dat
 ## Docker ##
 The docker-compose file contains docker containers for MySQL, Prometheus, AlertManager and Grafana.
 
-### MySQL ###
+## MySQL ##
 MySQL is booted up in a container as the backend database for the application. Flyway should be used to populate the data, then
 the application can fetch the data from the database. Flyway connects using a JDBC connection, but the Spring Boot application
 uses R2DBC to connect for asynchronous purposes. The mydb database can then be connected to locally using the 3306 port.
 
-### Prometheus ###
+## Prometheus ##
 Prometheus collects metrics from the service. It uses the service at `user-api-service:9092` and the yml [here](docker/prometheus/prometheus.yml).
 
+![prometheus.png](src/main/resources/prometheus.png)
 
-### Alert Manager ###
+## Alert Manager ##
 Alert Manager isn't set up to do anything, but would normally evaluate Prometheus rules with any alerts being routed to the receiver
 as set in the [alertmanager](docker/alertmanager/alertmanager.yml) yml file.
 
-### Grafana ###
+## Grafana ##
 Grafana uses a default dashboard to display data for the springboot service. We can set up Prometheus as a data source, then import
 the dashboard from Grafana from https://grafana.com/grafana/dashboards/11378. This then shows the metrics churned out from the 
 service in real time.
+
+![grafana.png](src/main/resources/grafana.png)
 
 ## Helm ##
 Helm files can be created using `helm create userdataapi`. This includes templates and helpers as well as the default value

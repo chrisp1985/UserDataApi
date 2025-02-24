@@ -2,22 +2,22 @@ services:
 
   # Applications
 
-  user-api-service:
-    depends_on:
-      usermysql:
-        condition: service_healthy
-      prometheus:
-        condition: service_started
-      grafana:
-        condition: service_started
-      alertmanager:
-        condition: service_started
-    image: "user-data-api-docker-image"
-    container_name: "user-data-api-docker-image"
-    ports:
-      - "9092:9092"
-    environment:
-      - SPRING_R2DBC_URL=r2dbc:mysql://usermysql:3306/mydb
+#  user-api-service:
+#    depends_on:
+#      usermysql:
+#        condition: service_healthy
+#      prometheus:
+#        condition: service_started
+#      grafana:
+#        condition: service_started
+#      alertmanager:
+#        condition: service_started
+#    image: "user-data-api-docker-image"
+#    container_name: "user-data-api-docker-image"
+#    ports:
+#      - "9092:9092"
+#    environment:
+#      - SPRING_R2DBC_URL=r2dbc:mysql://usermysql:3306/mydb
 
   # Backing Services
 
